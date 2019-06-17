@@ -28,7 +28,7 @@ KCPTUN_RELEASES_URL='https://api.github.com/repos/xtaci/kcptun/releases'
 KCPTUN_LATEST_RELEASE_URL="${KCPTUN_RELEASES_URL}/latest"
 KCPTUN_TAGS_URL='https://github.com/xtaci/kcptun/tags'
 
-BASE_URL='https://github.com/kuoruan/shell-scripts/raw/master/kcptun'
+BASE_URL='https://github.com/ggggxiaolong/shell-scripts/raw/master/kcptun'
 SHELL_VERSION_INFO_URL="${BASE_URL}/version.json"
 
 JQ_DOWNLOAD_URL="https://github.com/stedolan/jq/releases/download/jq-1.5/"
@@ -717,14 +717,14 @@ install_deps() {
 				( set -x; sleep 3; apt-get install -y -q tar )
 			fi
 
-			if ! command_exists pip; then
+			if ! command_exists pip3; then
 				apt_get_update
-				( set -x; sleep 3; apt-get install -y -q python-pip || true )
+				( set -x; sleep 3; apt-get install -y -q python3-pip || true )
 			fi
 
-			if ! command_exists python; then
+			if ! command_exists python3; then
 				apt_get_update
-				( set -x; sleep 3; apt-get install -y -q python )
+				( set -x; sleep 3; apt-get install -y -q python3 )
 			fi
 			;;
 		fedora|centos|redhat|oraclelinux|photon)
@@ -741,12 +741,12 @@ install_deps() {
 					( set -x; sleep 3; dnf -y -q install tar )
 				fi
 
-				if ! command_exists pip; then
-					( set -x; sleep 3; dnf -y -q install python-pip || true )
+				if ! command_exists pip3; then
+					( set -x; sleep 3; dnf -y -q install python3-pip || true )
 				fi
 
-				if ! command_exists python; then
-					( set -x; sleep 3; dnf -y -q install python )
+				if ! command_exists python3; then
+					( set -x; sleep 3; dnf -y -q install python3 )
 				fi
 			elif [ "$lsb_dist" = "photon" ]; then
 				if ! command_exists wget; then
@@ -761,12 +761,12 @@ install_deps() {
 					( set -x; sleep 3; tdnf -y install tar )
 				fi
 
-				if ! command_exists pip; then
-					( set -x; sleep 3; tdnf -y install python-pip || true )
+				if ! command_exists pip3; then
+					( set -x; sleep 3; tdnf -y install python3-pip || true )
 				fi
 
-				if ! command_exists python; then
-					( set -x; sleep 3; tdnf -y install python )
+				if ! command_exists python3; then
+					( set -x; sleep 3; tdnf -y install python3 )
 				fi
 			else
 				if ! command_exists wget; then
@@ -783,13 +783,13 @@ install_deps() {
 
 				# CentOS 等红帽系操作系统的软件库中可能不包括 python-pip
 				# 可以先安装 epel-release
-				if ! command_exists pip; then
-					( set -x; sleep 3; yum -y -q install python-pip || true )
+				if ! command_exists pip3; then
+					( set -x; sleep 3; yum -y -q install python3-pip || true )
 				fi
 
 				# 如果 python-pip 安装失败，检测是否已安装 python 环境
-				if ! command_exists python; then
-					( set -x; sleep 3; yum -y -q install python )
+				if ! command_exists python3; then
+					( set -x; sleep 3; yum -y -q install python3 )
 				fi
 			fi
 			;;
@@ -802,7 +802,7 @@ install_deps() {
 			;;
 	esac
 
-	# 这里判断了是否存在安装失败的软件包，但是默认不处理 python-pip 的安装失败，
+	# 这里判断了是否存在安装失败的软件包，但是默认不处理 python3-pip 的安装失败，
 	# 接下来会统一检测并再次安装 pip 命令
 	if [ "$?" != 0 ]; then
 		cat >&2 <<-'EOF'
@@ -831,9 +831,9 @@ install_supervisor() {
 		exit 1
 	fi
 
-	if ! command_exists python; then
+	if ! command_exists python3; then
 		cat >&2 <<-'EOF'
-		python 环境未安装，并且自动安装失败，请手动安装 python 环境。
+		python3 环境未安装，并且自动安装失败，请手动安装 python3 环境。
 		EOF
 
 		exit 1
@@ -884,13 +884,13 @@ install_supervisor() {
 		any_key_to_continue
 	fi
 
-	if ! command_exists pip; then
+	if ! command_exists pip3; then
 		# 如果没有监测到 pip 命令，但当前服务器已经安装 python
 		# 使用 get-pip.py 脚本来安装 pip 命令
 		if [ "$is_python_26" = "true" ]; then
 			(
 				set -x
-				wget -qO- --no-check-certificate https://bootstrap.pypa.io/2.6/get-pip.py | python
+				wget -qO- --no-check-certificate https://bootstrap.pypa.io/get-pip.py | python
 			)
 		else
 			(
@@ -901,7 +901,7 @@ install_supervisor() {
 	fi
 
 	# 如果使用脚本安装依然失败，提示手动安装
-	if ! command_exists pip; then
+	if ! command_exists pip3; then
 		cat >&2 <<-EOF
 		未找到已安装的 pip 命令，请先手动安装 python-pip
 		本脚本自 v21 版开始使用 pip 来安装 Supervisior。
@@ -929,7 +929,7 @@ install_supervisor() {
 		exit 1
 	fi
 
-	if ! ( pip --version >/dev/null 2>&1 ); then
+	if ! ( pip3 --version >/dev/null 2>&1 ); then
 		cat >&2 <<-EOF
 		检测到当前环境的 pip 命令已损坏，
 		请检查你的 python 环境。
@@ -945,19 +945,19 @@ install_supervisor() {
 		# https://pip.pypa.io/en/stable/installing/
 		(
 			set -x
-			pip install --upgrade pip || true
+			pip3 install --upgrade pip3 || true
 		)
 	fi
 
 	if [ "$is_python_26" = "true" ]; then
 		(
 			set -x
-			pip install 'supervisor>=3.0.0,<4.0.0'
+			pip3 install 'supervisor>=3.0.0,<4.0.0'
 		)
 	else
 		(
 			set -x
-			pip install --upgrade supervisor
+			pip3 install --upgrade supervisor
 		)
 	fi
 
@@ -965,7 +965,7 @@ install_supervisor() {
 		cat >&2 <<-EOF
 		错误: 安装 Supervisor 失败，
 		请尝试使用
-		  pip install supervisor
+		  pip3 install supervisor
 		来手动安装。
 		Supervisor 从 4.0 开始已不支持 python 2.6 及以下版本
 		python 2.6 的用户请使用：
@@ -1027,7 +1027,7 @@ install_supervisor() {
 
 				cd "$temp"
 				tar -zxf "$temp/meld3.tar.gz" --strip=1
-				python setup.py install
+				python3 setup.py install
 				cd "$pwd"
 			)
 
@@ -2478,8 +2478,8 @@ do_uninstall() {
 				(
 					set -x
 					# 新版使用 pip 卸载
-					if command_exists pip; then
-						pip uninstall -y supervisor 2>/dev/null || true
+					if command_exists pip3; then
+						pip3 uninstall -y supervisor 2>/dev/null || true
 					fi
 
 					# 旧版使用 easy_install 卸载
@@ -2506,7 +2506,7 @@ do_uninstall() {
 
 	cat >&1 <<-EOF
 	卸载完成, 欢迎再次使用。
-	注意: 脚本没有自动卸载 python-pip 和 python-setuptools（旧版脚本使用）
+	注意: 脚本没有自动卸载 python3-pip 和 python-setuptools（旧版脚本使用）
 	如有需要, 你可以自行卸载。
 	EOF
 }
