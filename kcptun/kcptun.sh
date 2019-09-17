@@ -839,7 +839,7 @@ install_supervisor() {
 		exit 1
 	fi
 
-	local python_version="$(python -V 2>&1)"
+	local python_version="$(python3 -V 2>&1)"
 
 	if [ "$?" != "0" ] || [ -z "$python_version" ]; then
 		cat >&2 <<-'EOF'
